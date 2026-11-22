@@ -51,7 +51,7 @@ const categories = [
     name: 'Spa & Massage',
     description: 'Swedish deep tissue massage, neck relief, and hot stone therapy.',
     icon: HeartHandshake,
-    image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1650044252595-cacd425982ff?auto=format&fit=crop&w=600&q=80',
     count: '7+ Services',
   },
 ];

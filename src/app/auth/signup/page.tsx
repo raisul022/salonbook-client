@@ -111,8 +111,8 @@ export default function SignUpPage() {
         method: 'POST',
         body: JSON.stringify({
           email: `google.user.${Date.now().toString().slice(-4)}@example.com`,
-          name: 'Google Customer',
-          image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+          name: 'Alexander Hayes (Google)',
+          image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80',
         }),
       });
 

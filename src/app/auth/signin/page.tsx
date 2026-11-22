@@ -60,8 +60,8 @@ export default function SignInPage() {
         method: 'POST',
         body: JSON.stringify({
           email: 'google.customer@salonbook.com',
-          name: 'Sarah Connor (Google)',
-          image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80',
+          name: 'Alexander Hayes (Google)',
+          image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80',
         }),
       });
 
