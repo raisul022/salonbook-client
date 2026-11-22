@@ -93,6 +93,42 @@ const fallbackFeatured: ServiceItem[] = [
     rating: 4.7,
     reviewsCount: 26,
   },
+  {
+    id: 'f7',
+    serviceName: 'Deep Tissue Swedish Back & Shoulder Massage',
+    category: 'Spa & Massage',
+    description: 'Intense therapeutic massage focused on releasing upper back tension, stiff neck, and shoulder knots using warm organic eucalyptus oils.',
+    price: 85,
+    duration: 60,
+    image: 'https://images.unsplash.com/photo-1650044252595-cacd425982ff?auto=format&fit=crop&w=800&q=80',
+    status: 'active',
+    rating: 5.0,
+    reviewsCount: 63,
+  },
+  {
+    id: 'f8',
+    serviceName: 'Royal Hot Towel Straight Razor Shave',
+    category: 'Haircut & Styling',
+    description: 'Traditional multi-step hot towel treatment with pre-shave badger brush lather, vintage straight razor shave, cold towel pore close, and aftershave balm.',
+    price: 40,
+    duration: 35,
+    image: 'https://images.unsplash.com/photo-1512690459411-b9245aed614b?auto=format&fit=crop&w=800&q=80',
+    status: 'active',
+    rating: 4.9,
+    reviewsCount: 57,
+  },
+  {
+    id: 'f9',
+    serviceName: 'Artisan Scissor Cut & Signature Blowout',
+    category: 'Haircut & Styling',
+    description: 'Master styling with sectional shear sculpting, texturizing taper, invigorating scalp wash, and matte clay finish.',
+    price: 50,
+    duration: 45,
+    image: 'https://images.unsplash.com/photo-1593702295094-aea22597af65?auto=format&fit=crop&w=800&q=80',
+    status: 'active',
+    rating: 5.0,
+    reviewsCount: 42,
+  },
 ];
 
 export default function FeaturedServices() {
@@ -102,7 +138,7 @@ export default function FeaturedServices() {
   useEffect(() => {
     async function loadFeatured() {
       try {
-        const res = await fetchApi('/services?limit=6');
+        const res = await fetchApi('/services?limit=9');
         if (res.success && Array.isArray(res.data) && res.data.length > 0) {
           setServices(res.data);
         } else {
@@ -144,10 +180,10 @@ export default function FeaturedServices() {
           </Link>
         </div>
 
-        {/* Services Grid (At least 6 services, active only) */}
+        {/* Services Grid (At least 6 services, active only - 9 items for balanced 3x3 layout) */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((n) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
               <div key={n} className="rounded-3xl border border-stone-100 overflow-hidden bg-stone-50 animate-pulse">
                 <div className="h-56 bg-stone-200"></div>
                 <div className="p-6 space-y-3">
