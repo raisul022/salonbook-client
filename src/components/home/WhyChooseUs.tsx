@@ -28,10 +28,10 @@ const reasons = [
 
 const testimonials = [
   {
-    quote: 'SalonBook made reserving my bridal prep so effortless. The balayage and manicure were utterly sublime!',
-    author: 'Camilla Dupont',
-    role: 'Loyal Client',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    quote: 'The executive haircut, hot towel shave, and beard sculpting was premier tier. Reserving my regular slot takes seconds!',
+    author: 'Arthur Pendelton',
+    role: 'Managing Director',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80',
     stars: 5,
   },
   {

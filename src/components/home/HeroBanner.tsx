@@ -10,8 +10,8 @@ export default function HeroBanner() {
       {/* Salon-Themed High-Res Background Image with Luxury Overlay */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=2000&q=85"
-          alt="Luxury Salon Interior"
+          src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=2000&q=85"
+          alt="Luxury Gentlemen Salon Interior"
           className="w-full h-full object-cover object-center opacity-30 scale-105 transform hover:scale-100 transition-transform duration-1000 ease-out"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-950/80 to-transparent"></div>
