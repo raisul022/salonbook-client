@@ -16,6 +16,7 @@ import {
   User,
   Calendar,
 } from 'lucide-react';
+import LoyaltyCard from '@/components/dashboard/LoyaltyCard';
 
 interface CustomerStats {
   totalAppointments: number;
@@ -86,6 +87,9 @@ export default function CustomerDashboardOverview() {
           </div>
         </div>
       </div>
+
+      {/* VIP Loyalty Rewards Club Card */}
+      <LoyaltyCard />
 
       {/* Metrics Grid (Page 12 Requirement: Total, Pending, Confirmed, Cancelled) */}
       <div>

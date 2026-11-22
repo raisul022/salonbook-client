@@ -17,7 +17,9 @@ import {
   X,
   AlertTriangle,
   FileDown,
+  Calendar,
 } from 'lucide-react';
+import { exportAppointmentToIcs } from '@/lib/calendarExport';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
@@ -345,6 +347,24 @@ export default function MyAppointmentsPage() {
                               Cancel
                             </button>
                           )}
+
+                          {/* Add to Calendar (.ics) */}
+                          <button
+                            onClick={() => {
+                              exportAppointmentToIcs({
+                                title: `${app.serviceId?.serviceName || 'Salon Appointment'} - SalonBook`,
+                                description: `Appointment with SalonBook Luxury Studio. Date: ${app.appointmentDate}, Time: ${app.timeSlot}.`,
+                                dateStr: app.appointmentDate,
+                                timeStr: app.timeSlot,
+                                durationMinutes: app.serviceId?.duration || 60,
+                              });
+                              toast.success('Calendar event (.ics) downloaded!');
+                            }}
+                            className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors"
+                            title="Add to Google/Apple Calendar (.ics)"
+                          >
+                            <Calendar className="w-4 h-4" />
+                          </button>
 
                           {/* Download PDF Receipt (Extra Feature for Paid) */}
                           {isPaid && (

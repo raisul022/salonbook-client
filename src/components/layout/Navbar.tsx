@@ -30,20 +30,31 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-salon-100 shadow-sm transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-salon-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-salon-500/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-2xl font-bold tracking-tight text-stone-900 group-hover:text-salon-600 transition-colors">
-                Salon<span className="text-salon-600">Book</span>
+          {/* Logo & Live Status */}
+          <div className="flex items-center gap-4">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-salon-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-salon-500/20 group-hover:scale-105 transition-transform">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-2xl font-bold tracking-tight text-stone-900 group-hover:text-salon-600 transition-colors">
+                  Salon<span className="text-salon-600">Book</span>
+                </span>
+                <span className="block text-[10px] tracking-widest uppercase font-semibold text-stone-600 -mt-1">
+                  Luxury & Aesthetics
+                </span>
+              </div>
+            </Link>
+
+            {/* Live Studio Status Pill */}
+            <div className="hidden xl:inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-[11px] font-semibold text-emerald-800">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span className="block text-[10px] tracking-widest uppercase font-semibold text-stone-600 -mt-1">
-                Luxury & Aesthetics
-              </span>
+              <span>Open Today: 09:00 AM - 09:00 PM</span>
             </div>
-          </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
