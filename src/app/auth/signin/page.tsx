@@ -1,26 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { fetchApi } from '@/lib/api';
 import toast from 'react-hot-toast';
-import { Sparkles, Eye, EyeOff, ArrowRight, ShieldCheck, UserCheck } from 'lucide-react';
+import { Sparkles, Eye, EyeOff, ArrowRight, ShieldCheck, UserCheck, Info } from 'lucide-react';
 
-export default function SignInPage() {
+function SignInContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // If already authenticated, redirect immediately
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (redirectUrl && redirectUrl.startsWith('/') && user.role !== 'admin') {
+        router.push(redirectUrl);
+      } else {
+        router.push(user.role === 'admin' ? '/dashboard/admin' : '/dashboard/customer');
+      }
+    }
+  }, [isAuthenticated, user, redirectUrl, router]);
 
-    if (!email || !password) {
+  const performLogin = async (loginEmail: string, loginPass: string) => {
+    if (!loginEmail || !loginPass) {
       toast.error('Please enter both email and password.');
       return;
     }
@@ -29,27 +40,34 @@ export default function SignInPage() {
       setIsLoading(true);
       const res = await fetchApi('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: loginEmail, password: loginPass }),
       });
 
       if (res.success && res.token && res.user) {
         toast.success(`Welcome back, ${res.user.name}!`);
         login(res.token, res.user);
 
-        // Role-based redirection (Page 11 Requirement)
-        if (res.user.role === 'admin') {
+        // Smart Redirection: respect 'redirect' param or role-based dashboard
+        if (redirectUrl && redirectUrl.startsWith('/') && res.user.role !== 'admin') {
+          router.push(redirectUrl);
+        } else if (res.user.role === 'admin') {
           router.push('/dashboard/admin');
         } else {
           router.push('/dashboard/customer');
         }
       } else {
-        toast.error(res.message || 'Invalid credentials.');
+        toast.error(res.message || 'Invalid credentials. Please verify email and password.');
       }
     } catch (err: any) {
-      toast.error('Network error during sign in.');
+      toast.error('Network error during sign in. Please try again.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await performLogin(email, password);
   };
 
   // Google Authentication Handler
@@ -68,7 +86,14 @@ export default function SignInPage() {
       if (res.success && res.token && res.user) {
         toast.success('Signed in with Google!');
         login(res.token, res.user);
-        router.push(res.user.role === 'admin' ? '/dashboard/admin' : '/dashboard/customer');
+
+        if (redirectUrl && redirectUrl.startsWith('/') && res.user.role !== 'admin') {
+          router.push(redirectUrl);
+        } else if (res.user.role === 'admin') {
+          router.push('/dashboard/admin');
+        } else {
+          router.push('/dashboard/customer');
+        }
       } else {
         toast.error(res.message || 'Google sign-in failed.');
       }
@@ -84,17 +109,17 @@ export default function SignInPage() {
     if (role === 'admin') {
       setEmail('admin@salonbook.com');
       setPassword('AdminPassword123!');
-      toast('Admin test credentials populated!', { icon: '🔑' });
+      toast.success('Admin credentials populated! Click Sign In to continue.');
     } else {
       setEmail('customer@salonbook.com');
       setPassword('Customer123!');
-      toast('Customer test credentials populated!', { icon: '👤' });
+      toast.success('Customer credentials populated! Click Sign In to continue.');
     }
   };
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-salon-100">
+      <div className="max-w-md w-full space-y-6 bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-salon-100">
         <div className="text-center">
           <div className="inline-flex w-12 h-12 rounded-2xl bg-gradient-to-tr from-salon-600 to-amber-500 items-center justify-center text-white shadow-lg shadow-salon-500/20 mb-3">
             <Sparkles className="w-6 h-6" />
@@ -105,6 +130,19 @@ export default function SignInPage() {
           </p>
         </div>
 
+        {/* Redirect Notice if coming from a service page */}
+        {redirectUrl && (
+          <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-start gap-2.5 text-xs text-amber-900">
+            <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold">Sign in required</p>
+              <p className="text-amber-700 text-[11px] mt-0.5">
+                Sign in to view full treatment details and reserve your appointment slot.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Demo Fast Login Buttons for evaluation */}
         <div className="bg-salon-50/60 p-3.5 rounded-2xl border border-salon-100 space-y-2">
           <p className="text-[11px] font-semibold text-stone-600 uppercase tracking-wider text-center">
@@ -114,7 +152,7 @@ export default function SignInPage() {
             <button
               type="button"
               onClick={() => fillCredentials('admin')}
-              className="flex items-center justify-center gap-1.5 py-1.5 px-3 bg-white hover:bg-salon-100/60 border border-salon-200 text-stone-800 rounded-xl text-xs font-medium transition-all shadow-2xs"
+              className="flex items-center justify-center gap-1.5 py-2 px-3 bg-white hover:bg-salon-100/60 border border-salon-200 text-stone-800 rounded-xl text-xs font-semibold transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98]"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-salon-600" />
               Fill Admin
@@ -122,7 +160,7 @@ export default function SignInPage() {
             <button
               type="button"
               onClick={() => fillCredentials('customer')}
-              className="flex items-center justify-center gap-1.5 py-1.5 px-3 bg-white hover:bg-salon-100/60 border border-salon-200 text-stone-800 rounded-xl text-xs font-medium transition-all shadow-2xs"
+              className="flex items-center justify-center gap-1.5 py-2 px-3 bg-white hover:bg-salon-100/60 border border-salon-200 text-stone-800 rounded-xl text-xs font-semibold transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98]"
             >
               <UserCheck className="w-3.5 h-3.5 text-amber-600" />
               Fill Customer
@@ -135,7 +173,7 @@ export default function SignInPage() {
           type="button"
           onClick={handleGoogleAuth}
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-stone-200 rounded-2xl bg-white hover:bg-stone-50 text-stone-700 font-medium text-sm transition-all shadow-sm focus:outline-none"
+          className="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-stone-200 rounded-2xl bg-white hover:bg-stone-50 text-stone-700 font-semibold text-sm transition-all shadow-xs focus:outline-none hover:border-stone-300"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path
@@ -210,7 +248,7 @@ export default function SignInPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-white font-semibold bg-salon-600 hover:bg-salon-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-salon-600/20 transition-all text-sm"
+            className="w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-white font-semibold bg-salon-600 hover:bg-salon-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-salon-600/20 transition-all text-sm hover:scale-[1.01] active:scale-[0.99]"
           >
             {isLoading ? 'Authenticating...' : 'Sign In'}
             <ArrowRight className="w-4 h-4" />
@@ -219,11 +257,22 @@ export default function SignInPage() {
 
         <p className="text-center text-xs text-stone-500">
           Do not have an account?{' '}
-          <Link href="/auth/signup" className="font-semibold text-salon-600 hover:underline">
+          <Link
+            href={redirectUrl ? `/auth/signup?redirect=${encodeURIComponent(redirectUrl)}` : '/auth/signup'}
+            className="font-semibold text-salon-600 hover:underline"
+          >
             Register now
           </Link>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[70vh] flex items-center justify-center text-xs text-stone-400">Loading sign in...</div>}>
+      <SignInContent />
+    </Suspense>
   );
 }

@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { fetchApi } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { Sparkles, Eye, EyeOff, CheckCircle2, XCircle, ArrowRight, Upload, Link2 } from 'lucide-react';
 
-export default function SignUpPage() {
+function SignUpContent() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,6 +21,8 @@ export default function SignUpPage() {
 
   const { login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
 
   // Password rules validation
   const hasMinLength = password.length >= 6;
@@ -92,7 +94,11 @@ export default function SignUpPage() {
       if (res.success && res.token && res.user) {
         toast.success('Welcome to SalonBook! Account created.');
         login(res.token, res.user);
-        router.push('/dashboard/customer');
+        if (redirectUrl && redirectUrl.startsWith('/')) {
+          router.push(redirectUrl);
+        } else {
+          router.push('/dashboard/customer');
+        }
       } else {
         toast.error(res.message || 'Registration failed.');
       }
@@ -119,7 +125,11 @@ export default function SignUpPage() {
       if (res.success && res.token && res.user) {
         toast.success('Signed in with Google!');
         login(res.token, res.user);
-        router.push('/dashboard/customer');
+        if (redirectUrl && redirectUrl.startsWith('/')) {
+          router.push(redirectUrl);
+        } else {
+          router.push('/dashboard/customer');
+        }
       } else {
         toast.error(res.message || 'Google sign-in failed');
       }
@@ -361,5 +371,13 @@ export default function SignUpPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[70vh] flex items-center justify-center text-xs text-stone-400">Loading registration...</div>}>
+      <SignUpContent />
+    </Suspense>
   );
 }
